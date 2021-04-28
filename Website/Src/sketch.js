@@ -6,6 +6,11 @@ let object = "skull";
 let x, y;
 let cwidthRatio = 0.5, cheightRatio = 0.5;
 let scale = 1;
+let xOffset = 0;
+let yOffset = 0;
+let redraw = false;
+let strokeData = [];
+let index = 0;
 
 function setup() {
   canvas = createCanvas(windowWidth * cwidthRatio, windowHeight * cheightRatio);
@@ -20,17 +25,36 @@ function draw() {
       strokeWeight(3);
 
       if (penStatus === "end") {
-          return;
+					if(redraw){
+							redraw = false;
+					}
+					return;
       }
 
       if (penStatus == "down") {
-        line(x, y, x + currentStroke.dx * scale, y + currentStroke.dy * scale);
+					console.log(currentStroke === strokeData[strokeData.length-1])
+        	line(x, y, x + currentStroke.dx * scale, y + currentStroke.dy * scale);
       }
-      x += currentStroke.dx * scale;
-      y += currentStroke.dy * scale;
-      penStatus = currentStroke.pen;
-      model.generate(processStroke);
-  }     
+      if (!redraw) {        
+					x += currentStroke.dx * scale;
+					y += currentStroke.dy * scale;
+					penStatus = currentStroke.pen;
+					model.generate(processStroke);
+			} else {
+					if (index < strokeData.length) {
+						x += currentStroke.dx * scale;
+						y += currentStroke.dy * scale;
+						penStatus = currentStroke.pen;
+						currentStroke = strokeData[++index];
+					}
+					else {
+							redraw = false;
+							return;
+					}
+			}
+    }else{
+      console.log("noStroke");
+  }    
 }
 
 function processStroke(error, strokePath) {
@@ -38,6 +62,7 @@ function processStroke(error, strokePath) {
         console.error(error);
     } else {
         currentStroke = strokePath;
+				strokeData.push(currentStroke);
     }
 }
 
@@ -64,11 +89,16 @@ function processQuery(queryText) {
 }
 
 function startDrawing(obj) {
-    x = width / 2;
-    y = height / 2;
+    x = width / 2 + xOffset;
+    y = height / 2 + yOffset;
     object = obj;
     
-    if (models.includes(object)) {
+    if(obj === "current"){
+			penStatus = "down";
+			currentStroke = strokeData[index];
+		}
+
+		if (models.includes(object)) {
         model = ml5.sketchRNN(object, () => {
             penStatus = "down";
             model.generate(processStroke)
@@ -106,4 +136,16 @@ function setCanvasWidth(newPercentage) {
 function setCanvasHeight(newPercentage) {
     cheightRatio = newPercentage / 100;
     windowResized();
+}
+function setXoffset(val){
+    xOffset = parseInt(val);
+}
+function setYoffset(val){
+    yOffset = parseInt(val);
+}
+function redrawCurrent(){
+    console.log("redrawing");
+		redraw = true;
+		index = 0;
+		startDrawing("current");
 }

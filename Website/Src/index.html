@@ -17,10 +17,13 @@
     <input type="text" class="mx-auto" id="input"/> 
     <button onclick="processQuery(document.getElementById('input').value)">Go!</button>
     <button onclick="clearCanvas()">Clear</button>
+    <button onclick="redrawCurrent()">Redraw</button>
 
     <div class="text-left">
         Width: <input type="range" min=10 max=90 value=50 id="widthSlider" oninput="setCanvasWidth(this.value)"/> <br>
         Height: <input type="range" min=10 max=75 value=50 id="heighSlider" oninput="setCanvasHeight(this.value)"/> <br>
+        XOffset: <input type="text" name="xoff" oninput="setXoffset(this.value)">
+        YOffset: <input type="text" name="yoff" oninput="setYoffset(this.value)">
     </div>
     <main>
     </main>

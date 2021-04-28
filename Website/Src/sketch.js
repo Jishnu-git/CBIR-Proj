@@ -41,6 +41,28 @@ function processStroke(error, strokePath) {
     }
 }
 
+function processQuery(queryText) {
+    let req = new XMLHttpRequest();
+    req.open("POST", "/postag/", true);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            const taggedWords = JSON.parse(this.responseText);
+            console.log(taggedWords);
+            console.log(this.responseText);
+            let firstNN;
+            for (const taggedWord of taggedWords) {
+                if (taggedWord[1] === "NN") {
+                    firstNN = taggedWord[0];
+                    break;
+                }
+            } 
+            startDrawing(firstNN);
+        }
+    }
+    req.send(JSON.stringify({text: queryText}));
+}
+
 function startDrawing(obj) {
     x = width / 2;
     y = height / 2;

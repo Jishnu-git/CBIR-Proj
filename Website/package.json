@@ -1,0 +1,17 @@
+{
+  "name": "sketcher",
+  "version": "1.0.0",
+  "description": "You have downloaded the complete p5.js library ZIP file, yay!",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pos": "^0.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

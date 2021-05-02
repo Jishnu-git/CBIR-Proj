@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "pos": "^0.4.2"
   },
   "devDependencies": {},

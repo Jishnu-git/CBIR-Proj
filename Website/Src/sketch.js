@@ -1,69 +1,22 @@
-let model;
 let canvas;
-let currentStroke;
-let penStatus = "down";
-let object = "skull";
 let x, y;
 let cwidthRatio = 0.5, cheightRatio = 0.5;
-let scale = 1;
+let globalScale = 1;
 let xOffset = 0;
 let yOffset = 0;
-let redraw = false;
-let strokeData = [];
+let activeDrawings = [];
+let inactiveDrawings = [];
 let index = 0;
 
 function setup() {
-  canvas = createCanvas(windowWidth * cwidthRatio, windowHeight * cheightRatio);
-  background(255);
-  x = width / 2;
-  y = height / 2;
+    canvas = createCanvas(windowWidth * cwidthRatio, windowHeight * cheightRatio);
+    background(255);
+    x = width / 2;
+    y = height / 2;
 }
 
 function draw() {
-  if (currentStroke) {
-      stroke(0);
-      strokeWeight(3);
-
-      if (penStatus === "end") {
-					if(redraw){
-							redraw = false;
-					}
-					return;
-      }
-
-      if (penStatus == "down") {
-					console.log(currentStroke === strokeData[strokeData.length-1])
-        	line(x, y, x + currentStroke.dx * scale, y + currentStroke.dy * scale);
-      }
-      if (!redraw) {        
-					x += currentStroke.dx * scale;
-					y += currentStroke.dy * scale;
-					penStatus = currentStroke.pen;
-					model.generate(processStroke);
-			} else {
-					if (index < strokeData.length) {
-						x += currentStroke.dx * scale;
-						y += currentStroke.dy * scale;
-						penStatus = currentStroke.pen;
-						currentStroke = strokeData[++index];
-					}
-					else {
-							redraw = false;
-							return;
-					}
-			}
-    }else{
-      console.log("noStroke");
-  }    
-}
-
-function processStroke(error, strokePath) {
-    if (error) {
-        console.error(error);
-    } else {
-        currentStroke = strokePath;
-				strokeData.push(currentStroke);
-    }
+       
 }
 
 function processQuery(queryText) {
@@ -82,50 +35,36 @@ function processQuery(queryText) {
                     break;
                 }
             } 
-            startDrawing(firstNN);
+            startDrawing([firstNN]);
         }
     }
     req.send(JSON.stringify({text: queryText}));
 }
 
-function startDrawing(obj) {
-    x = width / 2 + xOffset;
-    y = height / 2 + yOffset;
-    object = obj;
-    
-    if(obj === "current"){
-			penStatus = "down";
-			currentStroke = strokeData[index];
-		}
-
-		if (models.includes(object)) {
-        model = ml5.sketchRNN(object, () => {
-            penStatus = "down";
-            model.generate(processStroke)
-        });
-    } else {
-        console.error("Specified object does not have a model!");
-    } 
+function startDrawing(objects) {
+    console.log(objects);
+    for (var obj of objects) {
+        console.log(obj)
+        var drawing = new Drawing(x, y, obj, globalScale);
+        activeDrawings.push(drawing);
+        drawing.generate(() => drawing.draw(true));
+    }
 }
 
 function clearCanvas() {
     clear();
+    activeDrawings = [];
 }
 
 function windowResized() {
-    penStatus = "end";
-    currentStroke = null;
-    scale = min(cwidthRatio / 0.9, cheightRatio / 0.75);
+    globalScale = min(cwidthRatio / 0.9, cheightRatio / 0.75) * 2;
     let newWidth = windowWidth * cwidthRatio;
     let newHeight = windowHeight * cheightRatio;
     resizeCanvas(newWidth, newHeight, true);
 
-    x = width / 2;
-    y = height / 2;
-    penStatus = "down";
-    model.reset();
-    model.generate(processStroke);
-
+    x = width / 2 + xOffset;
+    y = height / 2 + yOffset;
+    redrawActiveDrawings();
 }
 
 function setCanvasWidth(newPercentage) {
@@ -139,13 +78,27 @@ function setCanvasHeight(newPercentage) {
 }
 function setXoffset(val){
     xOffset = parseInt(val);
+    x = width / 2 + xOffset;
+    redrawActiveDrawings();
 }
 function setYoffset(val){
     yOffset = parseInt(val);
+    y = height / 2 + yOffset;
+    redrawActiveDrawings();
 }
-function redrawCurrent(){
-    console.log("redrawing");
-		redraw = true;
-		index = 0;
-		startDrawing("current");
+function redrawActiveDrawings() {
+    clear();
+    for (var drawing of activeDrawings) {
+        drawing.setScale(globalScale);
+        drawing.setX(x);
+        drawing.setY(y);
+        drawing.draw();
+    }
+}
+
+function regenerateActiveDrawings() {
+    clear();
+    for (var drawing of activeDrawings) {
+        drawing.generate(() => drawing.draw(true));
+    }
 }

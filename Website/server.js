@@ -25,6 +25,9 @@ function getRandomInt(min,max){
 }
 app.listen(3000, () => {
     console.log("Listening on port 3000");
+});
+
+function generateDataset() {
     var data = [];
     for (let i = 0; i < 1000; i++) {
         let main_x = getRandom(0,500);
@@ -57,7 +60,6 @@ app.listen(3000, () => {
     fs.writeFileSync('data.json',JSON.stringify(data),function(err){
         console.log(err);
     })
-    console.log("Done");
-})
+}
 
 

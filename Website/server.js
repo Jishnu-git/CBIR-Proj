@@ -24,6 +24,7 @@ function getRandomInt(min,max){
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 app.listen(3000, () => {
+    setLexicon(directionalWords);
     console.log("Listening on port 3000");
 });
 
@@ -61,5 +62,29 @@ function generateDataset() {
         console.log(err);
     })
 }
+
+function setLexicon(words, tag = ["DIR"]) {
+    for (var word of words) {
+        tagger.lexicon[word] = tag;
+    }
+}
+
+const directionalWords = [
+    "right",
+    "left",
+    "up",
+    "down",
+    "above",
+    "below",
+    "under",
+    "on",
+    "over",
+    "front",
+    "behind",
+    "next",
+    "side",
+    "beside",
+    "near"
+];
 
 

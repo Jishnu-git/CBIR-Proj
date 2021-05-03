@@ -26,16 +26,34 @@ function processQuery(queryText) {
     req.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             const taggedWords = JSON.parse(this.responseText);
+            let valid = true;
+            let query = "";
             console.log(taggedWords);
             console.log(this.responseText);
             let firstNN;
             for (const taggedWord of taggedWords) {
                 if (taggedWord[1] === "NN") {
-                    firstNN = taggedWord[0];
-                    break;
+                    if (models.includes(taggedWord[0])) {
+                        query += "<span class=\"green\">"
+                    } else {
+                        query += "<span class=\"red\">"
+                        valid = false;
+                    }
+                    if (!firstNN) firstNN = taggedWord[0];
+                } else if (taggedWord[1] === "DIR") {
+                    query += "<span class=\"blue\">"
+                } else {
+                    query += "<span class=\"gray\">"
                 }
+                query += taggedWord[0] + "</span> ";
             } 
-            startDrawing([firstNN]);
+            document.getElementById("query").innerHTML = query;
+            if (valid) {
+                startDrawing([firstNN]);
+                document.getElementById("error").style.visibility = "hidden";
+            } else {
+                document.getElementById("error").style.visibility = "visible";
+            }            
         }
     }
     req.send(JSON.stringify({text: queryText}));
@@ -54,6 +72,8 @@ function startDrawing(objects) {
 function clearCanvas() {
     clear();
     activeDrawings = [];
+    document.getElementById("query").innerHTML = "";
+    document.getElementById("error").style.visibility = "hidden";
 }
 
 function windowResized() {

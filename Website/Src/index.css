@@ -5,3 +5,19 @@ canvas {
 main {
     margin-top: 50px;
 }
+
+.red {
+    color: #FF4162;
+}
+
+.green {
+    color: #21B20C;
+}
+
+.blue {
+    color: #17DEEE;
+}
+
+.gray {
+    color: #606060;
+}

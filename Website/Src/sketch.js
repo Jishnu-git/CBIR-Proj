@@ -19,54 +19,45 @@ function draw() {
        
 }
 
-function processQuery(queryText) {
-    let req = new XMLHttpRequest();
-    req.open("POST", "/postag/", true);
-    req.setRequestHeader("Content-Type", "application/json");
-    req.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            const taggedWords = JSON.parse(this.responseText);
-            let valid = true;
-            let query = "";
-            console.log(taggedWords);
-            console.log(this.responseText);
-            let firstNN;
-            for (const taggedWord of taggedWords) {
-                if (taggedWord[1] === "NN") {
-                    if (models.includes(taggedWord[0])) {
-                        query += "<span class=\"green\">"
-                    } else {
-                        query += "<span class=\"red\">"
-                        valid = false;
-                    }
-                    if (!firstNN) firstNN = taggedWord[0];
-                } else if (taggedWord[1] === "DIR") {
-                    query += "<span class=\"blue\">"
-                } else {
-                    query += "<span class=\"gray\">"
-                }
-                query += taggedWord[0] + "</span> ";
-            } 
-            document.getElementById("query").innerHTML = query;
-            if (valid) {
-                startDrawing([firstNN]);
-                document.getElementById("error").style.visibility = "hidden";
-            } else {
-                document.getElementById("error").style.visibility = "visible";
-            }            
-        }
-    }
-    req.send(JSON.stringify({text: queryText}));
-}
-
 function startDrawing(objects) {
+    clear();
+    activeDrawings = [];
     console.log(objects);
+    var objectStatus = new Array(objects.length);
+    var centreInd;
     for (var obj of objects) {
         console.log(obj)
-        var drawing = new Drawing(x, y, obj, globalScale);
+        var drawing = new Drawing(x, y, obj.name, globalScale);
         activeDrawings.push(drawing);
-        drawing.generate(() => drawing.draw(true));
+
+        const ind = activeDrawings.length - 1;
+        objectStatus[ind] = false;
+        if (obj.position === "centre") {
+            centreInd = ind;
+        }
+
+        drawing.generate(() => objectStatus[ind] = true);
     }
+    allReady(objectStatus).then(() => {
+        //activeDrawings[centreInd].offsetPos(activeDrawings[centreInd].width() / 2 + xOffset, activeDrawings[centreInd].height() / 2 + yOffset);
+        clampScale(activeDrawings[centreInd]);
+        for (var i = centreInd - 1; i >= 0; i--) {
+            activeDrawings[i].setPos(activeDrawings[i + 1].x, activeDrawings[i + 1].y);
+            clampScale(activeDrawings[i]);
+            computeOffsets(activeDrawings[i], activeDrawings[i + 1], objects[i].position);
+        }
+
+        for (var drawing of activeDrawings) {
+            drawing.draw(true);
+        }
+    })
+}
+
+async function allReady(status) {
+    while (status.includes(false)) {
+        await sleep(50);
+    }
+    return;
 }
 
 function clearCanvas() {
@@ -118,7 +109,36 @@ function redrawActiveDrawings() {
 
 function regenerateActiveDrawings() {
     clear();
-    for (var drawing of activeDrawings) {
-        drawing.generate(() => drawing.draw(true));
+    for (var i = 0; i < activeDrawings.length; i++) {
+        const ind = i;
+        activeDrawings[i].generate(() => activeDrawings[ind].draw(true));
+    }
+}
+
+function clampScale(drawing) {
+    drawing.setScale(1);
+    if (drawing.width() >= 0.3 * width || drawing.height() >= 0.3 * height) {
+        drawing.setScale(Math.min(0.3 * width / drawing.width(), 0.3 * height / drawing.height()));
+    }
+}
+
+function computeOffsets(object, focus, position) {
+    const focusHalfWidth = focus.width() / 2;
+    const objectHalfWidth = object.width() / 2;
+    const focusHalfHeight = focus.height() / 2;
+    const objectHalfHeight = object.height() / 2;
+    switch (position) {
+        case "right":
+            object.offsetX(Math.floor(Math.random() * width * 0.15) + focusHalfWidth + objectHalfWidth);
+            break;
+        case "left":
+            object.offsetX(-1 * (Math.floor(Math.random() * width * 0.15) + focusHalfWidth + objectHalfWidth));
+            break;
+        case "down":
+            object.offsetY(Math.floor(Math.random() * height * 0.15) + focusHalfHeight + objectHalfHeight);
+            break;
+        case "up":
+            object.offsetY(-1 * (Math.floor(Math.random() * height * 0.15) + focusHalfHeight + objectHalfHeight));
+            break;
     }
 }

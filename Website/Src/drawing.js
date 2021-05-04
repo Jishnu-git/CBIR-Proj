@@ -102,6 +102,24 @@ class Drawing {
     setY(y) {
         this.y = y;
     }
+
+    setPos(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    offsetX(offset) {
+        this.x += offset;
+    }
+
+    offsetY(offset) {
+        this.y += offset;
+    }
+
+    offsetPos(offsetX, offsetY) {
+        this.x += offsetX;
+        this.y += offsetY;
+    }
 }
 
 function sleep(ms) {

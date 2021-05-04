@@ -81,6 +81,7 @@ const directionalWords = [
     "over",
     "front",
     "behind",
+    "back",
     "next",
     "side",
     "beside",

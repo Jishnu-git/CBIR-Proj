@@ -30,7 +30,7 @@ class Drawing {
                         console.err(err);
                         return;
                     } else {
-                        console.log(strokePath.pen);
+                        //console.log(strokePath.pen);
                         let nextPenStatus = strokePath.pen;
                         strokePath.pen = penStatus;
                         penStatus = nextPenStatus;
@@ -46,7 +46,7 @@ class Drawing {
                 });
             }
             this.ready = true;
-            if (callback) callback();
+            if (callback) callback(this.boundingBox());
         });
     }
 
@@ -119,6 +119,15 @@ class Drawing {
     offsetPos(offsetX, offsetY) {
         this.x += offsetX;
         this.y += offsetY;
+    }
+    boundingBox(){
+        var boundingBox = {
+            height:this.height(),
+            width:this.width(),
+            x: this.x,
+            y: this.y
+        }
+        return boundingBox;
     }
 }
 

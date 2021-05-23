@@ -4,6 +4,7 @@
   "description": "You have downloaded the complete p5.js library ZIP file, yay!",
   "main": "server.js",
   "dependencies": {
+    "@tensorflow/tfjs-node": "^3.6.1",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "pos": "^0.4.2"

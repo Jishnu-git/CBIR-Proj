@@ -1,1 +1,0 @@
-const wordVectors = ml5.word2vec('data/wordvecs.json', modelLoaded);

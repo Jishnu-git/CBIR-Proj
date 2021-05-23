@@ -36,7 +36,10 @@ function startDrawing(objects) {
             centreInd = ind;
         }
 
-        drawing.generate(() => objectStatus[ind] = true);
+        drawing.generate().then((boundingBox) => {
+            objectStatus[ind] = true
+            console.log(boundingBox)
+        });
     }
     allReady(objectStatus).then(() => {
         //activeDrawings[centreInd].offsetPos(activeDrawings[centreInd].width() / 2 + xOffset, activeDrawings[centreInd].height() / 2 + yOffset);

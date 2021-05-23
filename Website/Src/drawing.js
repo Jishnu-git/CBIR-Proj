@@ -13,41 +13,44 @@ class Drawing {
         this.ready = false;
     }
 
-    generate(callback = null) {
-        this.ready = false;
-        this.strokePath = [];
-        this.model = ml5.sketchRNN(this.modelName, async () => {
-            let penStatus = "down";
-            let x = this.x,
-                y = this.y;
-            this.maxX = x;
-            this.minX = x;
-            this.maxY = y;
-            this.minY = y;
-            while (penStatus != "end") {
-                await this.model.generate((err, strokePath) => {
-                    if (err) {
-                        console.err(err);
-                        return;
-                    } else {
-                        //console.log(strokePath.pen);
-                        let nextPenStatus = strokePath.pen;
-                        strokePath.pen = penStatus;
-                        penStatus = nextPenStatus;
-                        this.strokePath.push(strokePath);
-
-                        x += strokePath.dx * this.scale;
-                        y += strokePath.dy * this.scale;
-                        if (x > this.maxX) this.maxX = x;
-                        if (y > this.maxY) this.maxY = y;
-                        if (x < this.minX) this.minX = x;
-                        if (y < this.minY) this.minY = y;
-                    }
-                });
-            }
-            this.ready = true;
-            if (callback) callback(this.boundingBox());
-        });
+    async generate(callback = null) {
+        return new Promise((resolve) => {
+            this.ready = false;
+            this.strokePath = [];
+            this.model = ml5.sketchRNN(this.modelName, async () => {
+                let penStatus = "down";
+                let x = this.x,
+                    y = this.y;
+                this.maxX = x;
+                this.minX = x;
+                this.maxY = y;
+                this.minY = y;
+                while (penStatus != "end") {
+                    await this.model.generate((err, strokePath) => {
+                        if (err) {
+                            console.err(err);
+                        } else {
+                            //console.log(strokePath.pen);
+                            let nextPenStatus = strokePath.pen;
+                            strokePath.pen = penStatus;
+                            penStatus = nextPenStatus;
+                            this.strokePath.push(strokePath);
+    
+                            x += strokePath.dx * this.scale;
+                            y += strokePath.dy * this.scale;
+                            if (x > this.maxX) this.maxX = x;
+                            if (y > this.maxY) this.maxY = y;
+                            if (x < this.minX) this.minX = x;
+                            if (y < this.minY) this.minY = y;
+                        }
+                    });
+                }
+                this.ready = true;
+                if (callback) callback(this.boundingBox());
+                return resolve(this.boundingBox());
+            });
+        })
+       
     }
 
     async draw(delayed = false) {
@@ -121,13 +124,12 @@ class Drawing {
         this.y += offsetY;
     }
     boundingBox(){
-        var boundingBox = {
+        return {
             height:this.height(),
             width:this.width(),
             x: this.x,
             y: this.y
         }
-        return boundingBox;
     }
 }
 

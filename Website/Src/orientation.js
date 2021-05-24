@@ -73,8 +73,8 @@ function formatPositions(objects) {
 const directions = {
     "right": ["right"],
     "left": ["left"],
-    "up": ["up", "above", "over", "on"],
-    "down": ["down", "below", "under"],
+    "top": ["up", "above", "over", "on"],
+    "bottom": ["down", "below", "under"],
     "front": ["front"],
     "behind": ["behind"],
     "side": ["side", "next", "near", "beside"]

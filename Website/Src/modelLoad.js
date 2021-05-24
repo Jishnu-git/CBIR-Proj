@@ -4,6 +4,8 @@ const DiscOptions = {
 var discLoaded = false;
 var genLoaded = false;
 var DiscModel = ml5.neuralNetwork(DiscOptions);
+var xX = 10; var yY = 10;
+
 
 LoadModelDisc();
 //let disc;
@@ -12,6 +14,12 @@ function LoadModelDisc() {
         console.log("Model loaded");
     });
 }
+
+function setXY(X, Y) {
+    xX = X;
+    yY = Y;    
+}
+
 async function callGenModel(input){
     return new Promise(resolve =>{
         console.log("Hello");
@@ -33,36 +41,36 @@ async function placeObject(input, callback = null) {
     return new Promise(async (resolve) =>{
         let result;
         let position = null;
-        let count = 0;
-        do {
-            count++;
-            position = await callGenModel(input);
-            console.log(position);
-            var discInput = {
-                main_x: input[0],
-                main_y:input[1],
-                main_height:input[2],
-                main_width:input[3],
-                shape_height:input[4],
-                shape_width:input[5],
-                shape_x:position.x,
-                shape_y:position.y,
-            }
-            result = await DiscModel.classify(discInput);
-            console.log(result[0].label)
-            console.log(input[6]);
-            // var discInput = {
-            //     main_x: input[0],
-            //     main_y:input[1],
-            //     main_height:input[2],
-            //     main_width:input[3],
-            //     shape_height:input[4],
-            //     shape_width:input[5],
-            //     shape_x:position.x,
-            //     shape_y:position.y,
-            // }
-            // result = await DiscModel.classify(discInput);
-        }while(result[0].label !== input[6] && count < 3)
+        position = await callGenModel(input);
+        console.log(position);
+        var discInput = {
+            main_x: input[0],
+            main_y:input[1],
+            main_height:input[2],
+            main_width:input[3],
+            shape_height:input[4],
+            shape_width:input[5],
+            shape_x:position.x,
+            shape_y:position.y,
+        }
+        result = await DiscModel.classify(discInput);
+        console.log(result[0].label)
+        console.log(input[6]);
+        console.log("Xdiff: ",(discInput.main_x - discInput.shape_x)*xX)
+        console.log("Ydiff: ",(discInput.main_y - discInput.shape_y)*yY)
+        // var discInput = {
+        //     main_x: input[0],
+        //     main_y:input[1],
+        //     main_height:input[2],
+        //     main_width:input[3],
+        //     shape_height:input[4],
+        //     shape_width:input[5],
+        //     shape_x:position.x,
+        //     shape_y:position.y,
+        // }
+        // result = await DiscModel.classify(discInput);
+        position.x = position.x * xX
+        position.y = position.y * yY
         return resolve(position);
     })
 }

@@ -74,51 +74,52 @@ function predictPos(input){
 
 function oneHotEncode(position){
     //One Hot Encoding Directions 
-    let topBit = 0; // 0 for inactive 1 for active
-    let bottomBit = 0;
-    let leftBit = 0;
-    let rightBit = 0;
+    let top = 0; 
+    // 0 for inactive 1 for active
+    let bottom = 0;
+    let left = 0;
+    let right = 0;
+    let topRight = 0;
+    let bottomRight = 0;
+    let topLeft = 0;
+    let bottomLeft = 0;
 
     switch(position){
         case'top left':
-            topBit = 1;
-            leftBit = 1;
+            topLeft = 1
             break;
         case'top right':
-            topBit = 1;
-            rightBit = 1;
+            topRight = 1;
             break;
-        case'up':
-            topBit = 1;
+        case'top':
+            top = 1;
             break;
-        case'down':
-            bottomBit = 1;
+        case'bottom':
+            bottom = 1;
             break;
         case'right':
-            rightBit = 1;
+            right = 1;
             break;
         case'left':
-            leftBit = 1;
+            left = 1;
             break;
         case'bottom left':
-            bottomBit = 1;
-            leftBit = 1;
+            bottomLeft = 1
             break;
         case'bottom right':
-            bottomBit = 1;
-            rightBit = 1;
+            bottomRight = 1
             break;
         default:
             console.error("Incorrect Position");
             return;
     }
-return [topBit, bottomBit, leftBit, rightBit];
+return [top, bottom, right, left, topLeft, topRight, bottomLeft, bottomRight];
 }
 
 //Functions for Dataset Creation for training the model
 function generateDatasetFile() {
     var data = generateSpecData();
-    var file = fs.createWriteStream("Src/Datasets/disc_data.json",{flags:'a'})
+    var file = fs.createWriteStream("Src/Datasets/disc_data1.json",{flags:'a'})
     file.write(JSON.stringify(data) + '\n');
     file.end();
     file.close();
@@ -146,7 +147,7 @@ function generateSpecData(){
                     break;
                 case'top right':
                     shape_x = main_x + (shape_width + main_width + getRandom(0,20));
-                    shape_y = main_y + (shape_height + main_height + getRandom(0,20));
+                    shape_y = main_y - (shape_height + main_height + getRandom(0,20));
                     break;
                 case'top':
                     shape_x = getRandom(0,main_width);

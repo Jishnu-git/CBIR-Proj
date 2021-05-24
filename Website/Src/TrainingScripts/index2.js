@@ -41,14 +41,14 @@ async function onTrainingFinish(){
     for (let i = 0; i < test_data.length; i++) {
         const element = test_data[i];
         input = {
-            main_height:element.main_height,
-            main_width:element.main_width,
-            main_x: element.main_x,
-            main_y:element.main_y,
-            shape_height:element.shape_height,
-            shape_width:element.shape_width,
-            shape_x:element.shape_x,
-            shape_y:element.shape_y
+            main_height:element.main_height/300,
+            main_width:element.main_width/300,
+            main_x: element.main_x/100,
+            main_y:element.main_y/100,
+            shape_height:element.shape_height/100,
+            shape_width:element.shape_width/100,
+            shape_x:element.shape_x/420,
+            shape_y:element.shape_y/420
         }
         resultArray.push(nn.testModel(input));                
     }
@@ -76,14 +76,14 @@ function addData() {
     for (let i = 0; i < train.length; i++) {
         const element = train[i];
         input = {
-            main_height:element.main_height,
-            main_width:element.main_width,
-            main_x: element.main_x,
-            main_y:element.main_y,
-            shape_height:element.shape_height,
-            shape_width:element.shape_width,
-            shape_x:element.shape_x,
-            shape_y:element.shape_y
+            main_height:element.main_height/300,
+            main_width:element.main_width/300,
+            main_x: element.main_x/100,
+            main_y:element.main_y/100,
+            shape_height:element.shape_height/100,
+            shape_width:element.shape_width/100,
+            shape_x:element.shape_x/420,
+            shape_y:element.shape_y/420
         }
         output = {
             position:element.position

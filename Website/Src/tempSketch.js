@@ -9,15 +9,20 @@ let generatedDrawing = [];
 let mainBoundingBox;
 let aligned = false;
 let readyCount = 0;
+let objectCount = 10;
+
 
 function setup() {
     canvas = createCanvas(windowWidth * cwidthRatio, windowHeight * cheightRatio);
+    // canvas = createCanvas(1000, 500);
     background(255);
     x = width / 2;
     y = height / 2;
+    console.log(x,y)
+    setXY(x,y);
 }
 function draw() {
-       if(readyCount === 3 && aligned === false && activeDrawings.length > 0){
+       if(readyCount === objectCount && aligned === false && activeDrawings.length > 0){
            alignObjects();
            console.log(activeDrawings.length);
            aligned = true;
@@ -25,6 +30,7 @@ function draw() {
 }
 function startDrawing(objects){
     console.log(objects);
+    objectCount = objects.length;
     objects.map(object => {
         activeDrawings.push({drawing: new Drawing(x,y,object.name,globalScale),position:object.position, status:false})
     })
@@ -59,17 +65,18 @@ async function alignObjects(){
         console.log(relBB);
 
         var input = [
-            relBB.x,
-            relBB.y,
-            relBB.height,
-            relBB.width,
-            objectBB.height,
-            objectBB.width,
+            relBB.x/300,
+            relBB.y/300,
+            relBB.height/100,
+            relBB.width/100,
+            objectBB.height/100,
+            objectBB.width/100,
             element.position
         ]
+        
         let position = await placeObject(input);
-        element.drawing.setX(position.x);
-        element.drawing.setY(position.y);
+        element.drawing.setX(position.y);
+        element.drawing.setY(position.x);
         let boundingBox = await element.drawing.generate();
         element.boundingbox = boundingBox;
     }

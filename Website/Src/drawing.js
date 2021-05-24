@@ -54,6 +54,7 @@ class Drawing {
     }
 
     async draw(delayed = false) {
+        console.log("drawin");
         if (!this.ready) {
             console.error("Call draw only after calling generate!")
         }

@@ -48,8 +48,7 @@ function startDrawing(objects){
 
 }
 
-function alignObjects(){
-    console.log("hellooo");
+async function alignObjects(){
     console.log(activeDrawings.length);
     for (let i = activeDrawings.length - 2; i >=0 ; i--) {
         let element = activeDrawings[i];
@@ -68,16 +67,20 @@ function alignObjects(){
             objectBB.width,
             element.position
         ]
-        placeObject(input, (position)=>{
-            element.drawing.setX(position.x);
-            element.drawing.setY(position.y);
-            element.drawing.generate((boundingbox)=>{
-                element.boundingbox = boundingbox;
-                element.status = true;
-                console.log(boundingbox);
-            })
-        });
+        let position = await placeObject(input);
+        element.drawing.setX(position.x);
+        element.drawing.setY(position.y);
+        let boundingBox = await element.drawing.generate();
+        element.boundingbox = boundingBox;
     }
+    drawActiveDrawings();
+}
+
+function drawActiveDrawings() {
+    activeDrawings.map(element => {
+        clampScale(element.drawing);
+        element.drawing.draw(true);
+    })
 }
 
 function finishedMainObject(boundingBox){

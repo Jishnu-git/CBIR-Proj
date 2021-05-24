@@ -118,7 +118,7 @@ return [topBit, bottomBit, leftBit, rightBit];
 //Functions for Dataset Creation for training the model
 function generateDatasetFile() {
     var data = generateSpecData();
-    var file = fs.createWriteStream("data.json",{flags:'a'})
+    var file = fs.createWriteStream("Src/Datasets/disc_data.json",{flags:'a'})
     file.write(JSON.stringify(data) + '\n');
     file.end();
     file.close();
@@ -148,11 +148,11 @@ function generateSpecData(){
                     shape_x = main_x + (shape_width + main_width + getRandom(0,20));
                     shape_y = main_y + (shape_height + main_height + getRandom(0,20));
                     break;
-                case'up':
+                case'top':
                     shape_x = getRandom(0,main_width);
                     shape_y = main_y - (shape_height + main_height + getRandom(0,20));
                     break;
-                case'down':
+                case'bottom':
                     shape_x = getRandom(0,main_width);
                     shape_y = main_y + (shape_height + main_height + getRandom(0,20));
                     break;

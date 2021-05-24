@@ -1,9 +1,9 @@
 class NNDiscriminator{
 
-  constructor(debug = 'true'){
+  constructor(){
     this.options = {
       task:'classification',
-      debug: debug
+      debug: true
     }
     this.model = ml5.neuralNetwork(this.options);
     this.iteration = 0;
@@ -50,6 +50,6 @@ class NNDiscriminator{
     this.iteration++;
   }
   saveNN(afterSave){
-    this.model.save("Position_Discriminator",afterSave);
+    this.model.save().then(afterSave());
   }
 }

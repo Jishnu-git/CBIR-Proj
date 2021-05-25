@@ -105,7 +105,7 @@ function extractData(splitRatio, iteration){
                 element.shape_width/100,
                 hotencode
             ].flat());
-            output.push([element.shape_x/420, element.shape_y/420])   
+            output.push([element.shape_x/300, element.shape_y/300])   
         }
     }
     let startIndex = data.length * splitRatio * iteration+1 
@@ -123,7 +123,7 @@ function extractData(splitRatio, iteration){
             element.shape_width/100,
             hotencode
         ].flat());
-        output.push([element.shape_x/420, element.shape_y/420])//,element.shape_y]);        
+        output.push([element.shape_x/300, element.shape_y/300])//,element.shape_y]);        
     }
 }
 

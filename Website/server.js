@@ -134,9 +134,9 @@ function generateSpecData(){
             let main_x = getRandom(0,300);
             let main_y = getRandom(0,300);
             let main_width = getRandomInt(0,100);
+            let main_height = getRandomInt(0,100);
             let shape_height = getRandomInt(0,100);
             let shape_width = getRandomInt(0,100);
-            let main_height = getRandomInt(0,100);
             let data_position = position;
             let shape_x;
             let shape_y;
@@ -176,6 +176,10 @@ function generateSpecData(){
                 default:
                     console.log("Incorrect position");
                     return;          
+            }
+            if (shape_x < 0 || shape_y < 0 || shape_x > 300 || shape_y > 300) {
+                i--;
+                continue;
             }
             var obj = {'main_x':main_x,'main_y':main_y,'main_height':main_height,'main_width':main_width,'shape_height':shape_height,'shape_width':shape_width,'shape_x':shape_x,'shape_y':shape_y, 'position':data_position};
             data.push(obj);

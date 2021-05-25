@@ -38,10 +38,12 @@ class Drawing {
     
                             x += strokePath.dx * this.scale;
                             y += strokePath.dy * this.scale;
-                            if (x > this.maxX) this.maxX = x;
-                            if (y > this.maxY) this.maxY = y;
-                            if (x < this.minX) this.minX = x;
-                            if (y < this.minY) this.minY = y;
+                            if (strokePath.pen == "down") {
+                                if (x > this.maxX) this.maxX = x;
+                                if (y > this.maxY) this.maxY = y;
+                                if (x < this.minX) this.minX = x;
+                                if (y < this.minY) this.minY = y;
+                            }
                         }
                     });
                 }
@@ -92,37 +94,41 @@ class Drawing {
     }
 
     setScale(scale) {
-        this.maxX *= scale / this.scale;
-        this.maxY *= scale / this.scale;
-        this.minY *= scale / this.scale;
-        this.minX *= scale / this.scale;
         this.scale = scale;
+        this.recalcPos();
     } 
 
     setX(x) {
         this.x = x;
+        this.recalcPos();
     }
 
     setY(y) {
         this.y = y;
+        this.recalcPos();
     }
 
     setPos(x, y) {
         this.x = x;
         this.y = y;
+        this.recalcPos();
     }
 
     offsetX(offset) {
         this.x += offset;
+        this.minX += offset;
+        this.maxX += offset;
     }
 
     offsetY(offset) {
         this.y += offset;
+        this.minY += offset;
+        this.maxY += offset;
     }
 
     offsetPos(offsetX, offsetY) {
-        this.x += offsetX;
-        this.y += offsetY;
+        this.offsetX(offsetX);
+        this.offsetY(offsetY);
     }
     boundingBox(){
         return {
@@ -130,6 +136,29 @@ class Drawing {
             width:this.width(),
             x: (this.maxX + this.minX) / 2,
             y: (this.maxY + this.minY) / 2
+        }
+    }
+
+    recalcPos() {
+        let x = this.x, 
+            y = this.y;
+
+        this.maxX = x;
+        this.minX = x;
+        this.maxY = y;
+        this.minY = y;
+        
+        stroke(0);
+        strokeWeight(3);
+        for (var strokePath of this.strokePath) {
+            if (strokePath.pen == "down") {
+                if (x > this.maxX) this.maxX = x;
+                if (y > this.maxY) this.maxY = y;
+                if (x < this.minX) this.minX = x;
+                if (y < this.minY) this.minY = y;
+            }
+            x += strokePath.dx * this.scale;
+            y += strokePath.dy * this.scale;
         }
     }
 }

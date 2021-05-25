@@ -58,10 +58,10 @@ async function placeObject(input, callback = null) {
         console.log(input[6]);
         // console.log("Xdiff: ",(discInput.main_x - discInput.shape_x)*xX)
         // console.log("Ydiff: ",(discInput.main_y - discInput.shape_y)*yY)
-        position.x = position.x * xX
-        position.y = position.y * yY
+        position.x = position.x * width;
+        position.y = position.y * height;
         console.log(position);
-        console.log([input[0]* xX, input[1] * yY])
+        console.log([input[0]* width, input[1] * height])
         return resolve(position);
     })
 }

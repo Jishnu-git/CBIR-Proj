@@ -52,6 +52,16 @@ function startDrawing(objects) {
 
         for (var drawing of activeDrawings) {
             drawing.draw(true);
+            const BB = drawing.boundingBox();
+            rect(BB.x - (BB.width / 2), BB.y - (BB.height / 2), BB.width, BB.height);
+            stroke("red")
+            strokeWeight(5);
+            point(BB.x, BB.y);
+            point(drawing.minX, drawing.minY);
+            point(drawing.maxX, drawing.maxY);
+            point(drawing.x, drawing.y);
+            stroke("black");
+            strokeWeight(1);
         }
     })
 }
@@ -132,16 +142,16 @@ function computeOffsets(object, focus, position) {
     const objectHalfHeight = object.height() / 2;
     switch (position) {
         case "right":
-            object.offsetX(Math.floor(Math.random() * width * 0.15) + focusHalfWidth + objectHalfWidth);
+            object.offsetX(Math.floor(Math.random() * width * 0.3) + focusHalfWidth + objectHalfWidth);
             break;
         case "left":
-            object.offsetX(-1 * (Math.floor(Math.random() * width * 0.15) + focusHalfWidth + objectHalfWidth));
+            object.offsetX(-1 * (Math.floor(Math.random() * width * 0.3) + focusHalfWidth + objectHalfWidth));
             break;
         case "down":
-            object.offsetY(Math.floor(Math.random() * height * 0.15) + focusHalfHeight + objectHalfHeight);
+            object.offsetY(Math.floor(Math.random() * height * 0.3) + focusHalfHeight + objectHalfHeight);
             break;
         case "up":
-            object.offsetY(-1 * (Math.floor(Math.random() * height * 0.15) + focusHalfHeight + objectHalfHeight));
+            object.offsetY(-1 * (Math.floor(Math.random() * height * 0.3) + focusHalfHeight + objectHalfHeight));
             break;
     }
 }

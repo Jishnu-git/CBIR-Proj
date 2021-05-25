@@ -63,10 +63,10 @@ async function alignObjects(){
         var input = [
             relBB.x/ width,
             relBB.y/ height,
-            relBB.height/(0.5 * height),
-            relBB.width/(0.5* width),
-            objectBB.height/(0.5 * height),
-            objectBB.width/(0.5* width),
+            relBB.height/(0.3 * height),
+            relBB.width/(0.3 * width),
+            objectBB.height/(0.3 * height),
+            objectBB.width/(0.3 * width),
             element.position
         ]
         
@@ -84,6 +84,9 @@ function drawActiveDrawings() {
     activateRun("drawingObj");
     activeDrawings.map(element => {
         element.drawing.draw(true);
+        //rect(element.drawing.minX, element.drawing.minY, element.drawing.width(), element.drawing.height());
+        const BB = element.drawing.boundingBox();
+        rect(element.drawing.minX, element.drawing.minY, BB.width, BB.height);
     })
 }
 

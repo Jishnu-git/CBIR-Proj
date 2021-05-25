@@ -79,18 +79,18 @@ function oneHotEncode(position){
     let bottom = 0;
     let left = 0;
     let right = 0;
-    let topRight = 0;
-    let bottomRight = 0;
-    let topLeft = 0;
-    let bottomLeft = 0;
+    // let topRight = 0;
+    // let bottomRight = 0;
+    // let topLeft = 0;
+    // let bottomLeft = 0;
 
     switch(position){
-        case'top left':
-            topLeft = 1
-            break;
-        case'top right':
-            topRight = 1;
-            break;
+        // case'top left':
+        //     topLeft = 1
+        //     break;
+        // case'top right':
+        //     topRight = 1;
+        //     break;
         case'top':
             top = 1;
             break;
@@ -103,17 +103,17 @@ function oneHotEncode(position){
         case'left':
             left = 1;
             break;
-        case'bottom left':
-            bottomLeft = 1
-            break;
-        case'bottom right':
-            bottomRight = 1
-            break;
+        // case'bottom left':
+        //     bottomLeft = 1
+        //     break;
+        // case'bottom right':
+        //     bottomRight = 1
+        //     break;
         default:
             console.error("Incorrect Position");
             return;
     }
-return [top, bottom, right, left, topLeft, topRight, bottomLeft, bottomRight];
+return [top, bottom, right, left]// topLeft, topRight, bottomLeft, bottomRight];
 }
 
 //Functions for Dataset Creation for training the model
@@ -128,9 +128,10 @@ function generateDatasetFile() {
 
 function generateSpecData(){
     var data = []
-    var positions = ['top left','top right', 'top', 'bottom', 'right', 'left','bottom left','bottom right'];
+    //var positions = ['top left','top right', 'top', 'bottom', 'right', 'left','bottom left','bottom right'];
+    var positions = [ 'top', 'bottom', 'right', 'left'];
     positions.forEach(position => {
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 2000; i++) {
             let main_x = getRandom(0,300);
             let main_y = getRandom(0,300);
             let main_width = getRandomInt(0,100);
@@ -141,40 +142,41 @@ function generateSpecData(){
             let shape_x;
             let shape_y;
             switch(position){
-                case'top left':
-                    shape_x = main_x - (shape_width + main_width + getRandom(0,20));
-                    shape_y = main_y - (shape_height + main_height + getRandom(0,20));
-                    break;
-                case'top right':
-                    shape_x = main_x + (shape_width + main_width + getRandom(0,20));
-                    shape_y = main_y - (shape_height + main_height + getRandom(0,20));
-                    break;
+                // case'top left':
+                //     shape_x = main_x - (shape_width/2 + main_width/2 + getRandom(0,20));
+                //     shape_y = main_y - (shape_height/2 + main_height/2 + getRandom(0,20));
+                // //     break;
+                // case'top right':
+                //     shape_x = main_x + (shape_width/2 + main_width/2 + getRandom(0,20));
+                //     shape_y = main_y - (shape_height/2 + main_height/2 + getRandom(0,20));
+                //     break;
                 case'top':
-                    shape_x = getRandom(0,main_width);
-                    shape_y = main_y - (shape_height + main_height + getRandom(0,20));
+                    shape_x = getRandom(Math.max(main_x - main_width/2,0),Math.min(main_x + main_width/2), 300);
+                    shape_y = main_y - (shape_height/2 + main_height/2 + getRandom(0,20));
                     break;
                 case'bottom':
-                    shape_x = getRandom(0,main_width);
-                    shape_y = main_y + (shape_height + main_height + getRandom(0,20));
+                    shape_x = getRandom(Math.max(main_x - main_width/2,0),Math.min(main_x + main_width/2), 300);
+                    shape_y = main_y + (shape_height/2 + main_height/2 + getRandom(0,20));
                     break;
                 case'right':
-                    shape_x = main_x + (shape_width + main_width + getRandom(0,20));
-                    shape_y = getRandom(0,main_height);
+                    shape_x = main_x + (shape_width/2 + main_width/2 + getRandom(0,20));
+                    shape_y = getRandom(Math.max(main_y - main_height/2, 0),Math.min(main_y + main_height/2),300);
                     break;
                 case'left':
-                    shape_x = main_x - (shape_width + main_width + getRandom(0,20));
-                    shape_y = getRandom(0,main_height);
+                    shape_x = main_x - (shape_width/2 + main_width/2 + getRandom(0,20));
+                    shape_y = getRandom(Math.max(main_y - main_height/2, 0),Math.min(main_y + main_height/2),300);
                     break;
-                case'bottom left':
-                    shape_x = main_x - (shape_width + main_width + getRandom(0,20));
-                    shape_y = main_y + (shape_height + main_height + getRandom(0,20));
-                    break;
-                case'bottom right':
-                    shape_x = main_x + (shape_width + main_width + getRandom(0,20));
-                    shape_y = main_y + (shape_height + main_height + getRandom(0,20));
-                    break;
+                // case'bottom left':
+                //     shape_x = main_x - (shape_width/2 + main_width/2 + getRandom(0,20));
+                //     shape_y = main_y + (shape_height/2 + main_height/2 + getRandom(0,20));
+                // //     break;
+                // case'bottom right':
+                //     shape_x = main_x + (shape_width/2 + main_width/2 + getRandom(0,20));
+                //     shape_y = main_y + (shape_height/2 + main_height/2 + getRandom(0,20));
+                //     break;
                 default:
                     console.log("Incorrect position");
+                    console.log(position);
                     return;          
             }
             if (shape_x < 0 || shape_y < 0 || shape_x > 300 || shape_y > 300) {

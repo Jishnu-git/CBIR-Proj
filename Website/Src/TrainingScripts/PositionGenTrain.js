@@ -60,7 +60,7 @@ function plotData(){
 
 function modelInit(){
     // Define a model for linear regression.
-    model.add(tf.layers.dense({units: 28, inputShape: [14]}));
+    model.add(tf.layers.dense({units: 28, inputShape: [10]}));
     model.add(tf.layers.leakyReLU());
     model.add(tf.layers.dropout(0.25))
     model.add(tf.layers.dense({units: 54}));
@@ -69,7 +69,7 @@ function modelInit(){
     model.add(tf.layers.dense({units: 28}));
     model.add(tf.layers.leakyReLU());
     model.add(tf.layers.dropout(0.25))
-    model.add(tf.layers.dense({units: 2}));
+    model.add(tf.layers.dense({units: 2}, activation="sigmoid"));
     model.compile({loss: 'meanSquaredError', optimizer: 'adam'});
     console.log(model.summary())
 
@@ -97,8 +97,8 @@ function extractData(splitRatio, iteration){
             hotencode = oneHotEncode(element.position);
             //Create Input and Output Arrays from Dataset
 
-            input.push([element.main_x / 300,
-                element.main_y / 300,
+            input.push([element.main_x/300,
+                element.main_y/300,
                 element.main_height/100,
                 element.main_width/100,
                 element.shape_height/100,
@@ -115,8 +115,8 @@ function extractData(splitRatio, iteration){
         hotencode = oneHotEncode(element.position);
         //Create Input and Output Arrays from Dataset
 
-        input.push([element.main_x / 300,
-            element.main_y / 300,
+        input.push([element.main_x/300,
+            element.main_y/300,
             element.main_height/100,
             element.main_width/100,
             element.shape_height/100,
@@ -134,18 +134,18 @@ function oneHotEncode(position){
         let bottom = 0;
         let left = 0;
         let right = 0;
-        let topRight = 0;
-        let bottomRight = 0;
-        let topLeft = 0;
-        let bottomLeft = 0;
+        // let topRight = 0;
+        // let bottomRight = 0;
+        // let topLeft = 0;
+        // let bottomLeft = 0;
     
         switch(position){
-            case'top left':
-                topLeft = 1
-                break;
-            case'top right':
-                topRight = 1;
-                break;
+            // case'top left':
+            //     topLeft = 1
+            //     break;
+            // case'top right':
+            //     topRight = 1;
+            //     break;
             case'top':
                 top = 1;
                 break;
@@ -158,15 +158,15 @@ function oneHotEncode(position){
             case'left':
                 left = 1;
                 break;
-            case'bottom left':
-                bottomLeft = 1
-                break;
-            case'bottom right':
-                bottomRight = 1
-                break;
+            // case'bottom left':
+            //     bottomLeft = 1
+            //     break;
+            // case'bottom right':
+            //     bottomRight = 1
+            //     break;
             default:
                 console.error("Incorrect Position");
                 return;
         }
-    return [top, bottom, right, left, topLeft, topRight, bottomLeft, bottomRight];
+    return [top, bottom, right, left]// topLeft, topRight, bottomLeft, bottomRight];
 }

@@ -17,8 +17,8 @@ async function onTrainingFinish(){
             main_width:element.main_width/100,
             shape_height:element.shape_height/100,
             shape_width:element.shape_width/100,
-            shape_x:element.shape_x/420,
-            shape_y:element.shape_y/420
+            shape_x:element.shape_x/300,
+            shape_y:element.shape_y/300
         }
         resultArray.push(nn.classify(input));                
     }
@@ -36,7 +36,7 @@ async function onTrainingFinish(){
         iteration++;
         training();
     })
-    .catch(err => console.log(err))        
+    .catch(err => console.log(err))
 }
 
 function addData(iteration) {
@@ -50,8 +50,8 @@ function addData(iteration) {
                 main_width:element.main_width/100,
                 shape_height:element.shape_height/100,
                 shape_width:element.shape_width/100,
-                shape_x:element.shape_x/420,
-                shape_y:element.shape_y/420
+                shape_x:element.shape_x/300,
+                shape_y:element.shape_y/300
             }
             let output = {
                 position:element.position
@@ -70,8 +70,8 @@ function addData(iteration) {
             main_width:element.main_width/100,
             shape_height:element.shape_height/100,
             shape_width:element.shape_width/100,
-            shape_x:element.shape_x/420,
-            shape_y:element.shape_y/420
+            shape_x:element.shape_x/300,
+            shape_y:element.shape_y/300
         }
         let output = {
             position:element.position

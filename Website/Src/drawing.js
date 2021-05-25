@@ -128,8 +128,8 @@ class Drawing {
         return {
             height:this.height(),
             width:this.width(),
-            x: this.x,
-            y: this.y
+            x: (this.maxX + this.minX) / 2,
+            y: (this.maxY + this.minY) / 2
         }
     }
 }

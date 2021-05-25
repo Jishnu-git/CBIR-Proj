@@ -3,7 +3,7 @@ class NNDiscriminator{
   constructor(){
     this.options = {
       task:'classification',
-      debug: true
+      debug: false
     }
     this.model = ml5.neuralNetwork(this.options);
     this.iteration = 0;
@@ -13,13 +13,14 @@ class NNDiscriminator{
     this.model.addData(input,output);
   }
 
-  trainModel(trainingOptions, finishedCallback = this.finishedTraining,whileTrainingCallback = this.whileTraining,){
+  async trainModel(trainingOptions, finishedCallback = this.finishedTraining,whileTrainingCallback = this.whileTraining,){
     if(trainingOptions === null){
       console.log("Training Options not specified");
       return;
     }
     this.model.normalizeData();
-    this.model.train(trainingOptions, whileTrainingCallback,finishedCallback);
+    let result = await this.model.train(trainingOptions);
+    return result;
   }
 
   whileTraining(epoch, loss){

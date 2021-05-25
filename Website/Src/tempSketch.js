@@ -19,7 +19,7 @@ function setup() {
     x = width / 2;
     y = height / 2;
     console.log(x,y)
-    setXY(x,y);
+    setXY(width , height);
 }
 function draw() {
        if(readyCount === objectCount && aligned === false && activeDrawings.length > 0){
@@ -29,32 +29,27 @@ function draw() {
        }
 }
 function startDrawing(objects){
+    activateRun("generateObj");
     console.log(objects);
     objectCount = objects.length;
+    activateObj("generateObj");
     objects.map(object => {
         activeDrawings.push({drawing: new Drawing(x,y,object.name,globalScale),position:object.position, status:false})
     })
     activeDrawings.map(activedrawing =>{
         activedrawing.drawing.generate((boundingbox)=>{
-            activedrawing.boundingbox = boundingbox;
+            clampScale(activedrawing.drawing);
+            let bb = activedrawing.drawing.boundingBox();
+            activedrawing.boundingbox = bb;
             activedrawing.status = true;
             readyCount++;
+            activateObj();
         })
     })
-    //Wait Function
-
-    // drawObjects = objects;
-    // const cInd = objects.findIndex((obj)=>obj.position == "centre");
-    // mainObject = new Drawing(x,y,objects[cInd].name,globalScale);
-    // mainObject.generate(finishedMainObject);
-    // for (let i = 0; i < objects.length; i++) { 
-    //     if(i != cInd)
-    //         unmainObjects.push({drawing: new Drawing(x,y,objects[i].name,globalScale),position:objects[i].position, status:false});    
-    // }
-
 }
 
 async function alignObjects(){
+    activateRun("placeObj");
     console.log(activeDrawings.length);
     for (let i = activeDrawings.length - 2; i >=0 ; i--) {
         let element = activeDrawings[i];
@@ -63,65 +58,35 @@ async function alignObjects(){
         let relBB = activeDrawings[i+1].boundingbox;
         console.log(objectBB);
         console.log(relBB);
-
+        const oldCenter = {x:objectBB.x, y:objectBB.y};
+        console.log(oldCenter);
         var input = [
-            relBB.x/300,
-            relBB.y/300,
-            relBB.height/100,
-            relBB.width/100,
-            objectBB.height/100,
-            objectBB.width/100,
+            relBB.x/ width,
+            relBB.y/ height,
+            relBB.height/(0.5 * height),
+            relBB.width/(0.5* width),
+            objectBB.height/(0.5 * height),
+            objectBB.width/(0.5* width),
             element.position
         ]
         
         let position = await placeObject(input);
-        element.drawing.setX(position.y);
-        element.drawing.setY(position.x);
+        element.drawing.offsetPos(position.x - oldCenter.x, position.y - oldCenter.y);
+        //element.drawing.OffsetY(position.y);
         let boundingBox = await element.drawing.generate();
         element.boundingbox = boundingBox;
     }
+    activateDone("placeObj");
     drawActiveDrawings();
 }
 
 function drawActiveDrawings() {
+    activateRun("drawingObj");
     activeDrawings.map(element => {
-        clampScale(element.drawing);
         element.drawing.draw(true);
     })
 }
 
-function finishedMainObject(boundingBox){
-    mainObject.draw(true);
-    mainBoundingBox = boundingBox;
-    console.log(mainBoundingBox);
-    unmainObjects.forEach(obj => {
-        obj.drawing.generate((boundingbox)=>{
-            var input = [
-                mainBoundingBox.x,
-                mainBoundingBox.y,
-                mainBoundingBox.height,
-                mainBoundingBox.width,
-                boundingbox.height,
-                boundingbox.width,
-                obj.position
-            ]
-            console.log(input);
-            placeObject(input, (position)=>{
-                obj.drawing.setX(position.x);
-                obj.drawing.setY(position.y);
-                obj.drawing.generate(()=>{
-                    obj.drawing.draw(true);
-                })
-            });
-        });
-    });
-}
-function generatePosition(){
-    return position
-}
-function onPredicted(resp){
-    
-}
 function regenerateActiveDrawings() {
     clear();
     for (var i = 0; i < activeDrawings.length; i++) {
@@ -149,4 +114,16 @@ function clampScale(drawing) {
     if (drawing.width() >= 0.3 * width || drawing.height() >= 0.3 * height) {
         drawing.setScale(Math.min(0.3 * width / drawing.width(), 0.3 * height / drawing.height()));
     }
+}
+
+function activateRun(element) {
+    $("#"+element).css({"color":"black", "border":"1px solid black"});
+}
+
+function activateObj() {
+    $("#generateObj").text("Generating objects "+readyCount+"/"+objectCount);
+}
+
+function activateDone(element) {
+    $("#"+element).text("Finished " + $("#"+element).text());
 }

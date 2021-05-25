@@ -42,7 +42,7 @@ async function placeObject(input, callback = null) {
         let result;
         let position = null;
         position = await callGenModel(input);
-        console.log(position);
+        //console.log(position);
         var discInput = {
             main_x: input[0],
             main_y:input[1],
@@ -56,21 +56,12 @@ async function placeObject(input, callback = null) {
         result = await DiscModel.classify(discInput);
         console.log(result[0].label)
         console.log(input[6]);
-        console.log("Xdiff: ",(discInput.main_x - discInput.shape_x)*xX)
-        console.log("Ydiff: ",(discInput.main_y - discInput.shape_y)*yY)
-        // var discInput = {
-        //     main_x: input[0],
-        //     main_y:input[1],
-        //     main_height:input[2],
-        //     main_width:input[3],
-        //     shape_height:input[4],
-        //     shape_width:input[5],
-        //     shape_x:position.x,
-        //     shape_y:position.y,
-        // }
-        // result = await DiscModel.classify(discInput);
+        // console.log("Xdiff: ",(discInput.main_x - discInput.shape_x)*xX)
+        // console.log("Ydiff: ",(discInput.main_y - discInput.shape_y)*yY)
         position.x = position.x * xX
         position.y = position.y * yY
+        console.log(position);
+        console.log([input[0]* xX, input[1] * yY])
         return resolve(position);
     })
 }

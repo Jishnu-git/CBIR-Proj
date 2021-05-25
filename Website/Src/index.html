@@ -10,6 +10,7 @@
     <script src="models.js"></script>
     <script src="drawing.js"></script>
     <script src="modelLoad.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
     <!-- <script src="sketch.js"></script> -->
     <script src="tempSketch.js"></script>
     <script src="orientation.js"></script>
@@ -28,6 +29,11 @@
         Height: <input type="range" min=10 max=75 value=50 id="heighSlider" oninput="setCanvasHeight(this.value)"/> <br>
         XOffset: <input type="text" name="xoff" oninput="setXoffset(this.value)" value=0>
         YOffset: <input type="text" name="yoff" oninput="setYoffset(this.value)" value=0>
+    </div>
+    <div class="status-report">
+        <span class = "status" id="generateObj">Generating Objects</span>
+        <span class = "status" id="placeObj">Placing Objects</span>
+        <span class = "status" id="drawingObj">Drawing Objects</span>
     </div>
 
     <br>

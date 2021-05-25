@@ -10,6 +10,7 @@ let mainBoundingBox;
 let aligned = false;
 let readyCount = 0;
 let objectCount = 10;
+let offsetX = 0, offsetY = 0;
 
 
 function setup() {
@@ -51,6 +52,12 @@ function startDrawing(objects){
 async function alignObjects(){
     activateRun("placeObj");
     console.log(activeDrawings.length);
+    const centerDrawing = activeDrawings[activeDrawings.length - 1].drawing;
+    let absMinX = centerDrawing.minX,
+        absMinY = centerDrawing.minY,
+        absMaxX = centerDrawing.maxX,
+        absMaxY = centerDrawing.maxY;
+
     for (let i = activeDrawings.length - 2; i >=0 ; i--) {
         let element = activeDrawings[i];
         element.status = false;
@@ -75,18 +82,76 @@ async function alignObjects(){
         //element.drawing.OffsetY(position.y);
         let boundingBox = await element.drawing.generate();
         element.boundingbox = boundingBox;
+        if (absMinX > element.drawing.minX) {
+            absMinX = element.drawing.minX;
+        }
+        if (absMinY > element.drawing.minY) {
+            absMinY = element.drawing.minY;
+        }
+        if (absMaxX < element.drawing.maxX) {
+            absMaxX = element.drawing.maxX;
+        }
+        if (absMaxY < element.drawing.maxY) {
+            absMaxY = element.drawing.maxY;
+        }
+
     }
     activateDone("placeObj");
+    calculateGlobalOffsets(absMinX, absMinY, absMaxX, absMaxY);
+    stroke("red");
+    rect(absMinX + offsetX, absMinY + offsetY, absMaxX - absMinX, absMaxY - absMinY);
+    console.log({xmin: absMinX, ymin: absMinY, xmax: absMaxX, ymax: absMaxY});
+    stroke(0);
     drawActiveDrawings();
+}
+
+function calculateGlobalOffsets(minX, minY, maxX, maxY) {
+    var fullWidth = maxX - minX;
+    var fullHeight = maxY - minY;
+    var center = {
+        x: (maxX + minX) / 2,
+        y: (maxY + minY) / 2
+    };
+    // if (fullWidth > width || fullHeight > height) {
+    //     globalScale = Math.min(width / fullWidth, height / fullHeight);
+    //     center.x *= globalScale;
+    //     center.y *= globalScale;
+    //     fullWidth *= globalScale;
+    //     fullHeight *= globalScale;
+    // }
+
+    // const scaledMaxX = center.x + (fullWidth / 2);
+    // const scaledMinX = center.x - (fullWidth / 2);
+    // const scaledMaxY = center.y + (fullHeight / 2);
+    // const scaledMinY = center.y - (fullHeight / 2);
+    
+    // if (scaledMaxX > width) {
+    //     offsetX = width - (center.x + (fullWidth / 2));
+    // } else if (scaledMinX < 0) {
+    //     offsetX = -1 * scaledMinX;
+    // } else {
+    //     offsetX = 0;
+    // }
+
+    // if (scaledMaxY > height) {
+    //     offsetY = height - (center.y + (fullHeight / 2));
+    // } else if (scaledMinY < 0) {
+    //     offsetY = -1 * scaledMinY;
+    // } else {
+    //     offsetY = 0;
+    // }
+    console.log(center);
+    offsetX = (width / 2) - center.x;
+    offsetY = (height / 2) - center.y;
 }
 
 function drawActiveDrawings() {
     activateRun("drawingObj");
     activeDrawings.map(element => {
-        element.drawing.draw(true);
+        element.drawing.draw(true, offsetX, offsetY, globalScale);
         //rect(element.drawing.minX, element.drawing.minY, element.drawing.width(), element.drawing.height());
         const BB = element.drawing.boundingBox();
-        rect(element.drawing.minX, element.drawing.minY, BB.width, BB.height);
+        rect(element.drawing.minX + offsetX, element.drawing.minY + offsetY, BB.width * globalScale, BB.height * globalScale);
     })
 }
 

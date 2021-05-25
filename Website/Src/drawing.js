@@ -55,24 +55,24 @@ class Drawing {
        
     }
 
-    async draw(delayed = false) {
+    async draw(delayed = false, offsetX = 0, offsetY = 0, tempScale = 1) {
         console.log("drawin");
         if (!this.ready) {
             console.error("Call draw only after calling generate!")
         }
 
-        let x = this.x, 
-            y = this.y;
+        let x = this.x + offsetX, 
+            y = this.y + offsetY;
 
         stroke(0);
         strokeWeight(3);
         for (var strokePath of this.strokePath) {
             if (strokePath.pen == "down") {
-                line(x, y, x + strokePath.dx * this.scale, y + strokePath.dy * this.scale);
+                line(x, y, x + strokePath.dx * this.scale * tempScale, y + strokePath.dy * this.scale * tempScale);
             }
 
-            x += strokePath.dx * this.scale;
-            y += strokePath.dy * this.scale;
+            x += strokePath.dx * this.scale * tempScale;
+            y += strokePath.dy * this.scale * tempScale;
             if (delayed) await(sleep(25));
         }
     }

@@ -37,7 +37,7 @@ async function callGenModel(input){
     })
     
 }
-async function placeObject(input, callback = null) {
+async function placeObject(input) {
     return new Promise(async (resolve) =>{
         let result;
         let position = null;
@@ -61,7 +61,7 @@ async function placeObject(input, callback = null) {
         position.x = position.x * width;
         position.y = position.y * height;
         console.log(position);
-        console.log([input[0]* width, input[1] * height])
+        console.log([input[0] * width, input[1] * height])
         return resolve(position);
     })
 }

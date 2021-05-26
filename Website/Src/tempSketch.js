@@ -1,6 +1,5 @@
 let canvas;
 let x, y;
-let cwidthRatio = 0.5, cheightRatio = 0.5;
 let globalScale = 1;
 let mainObject;
 let unmainObjects = [];
@@ -11,31 +10,43 @@ let aligned = false;
 let readyCount = 0;
 let objectCount = 10;
 let offsetX = 0, offsetY = 0;
+let showBoundingBox = false;
 
 
 function setup() {
-    canvas = createCanvas(windowWidth * cwidthRatio, windowHeight * cheightRatio);
+    canvas = createCanvas(windowWidth * 0.5, windowHeight * 0.5);
     // canvas = createCanvas(1000, 500);
     background(255);
     x = width / 2;
     y = height / 2;
     console.log(x,y)
     setXY(width , height);
+    for (const model of models) {
+        $("#listContent").append(
+            `<div class="col-12">
+                ` + model + `
+            </div>`
+        );
+    }
 }
 function draw() {
-       if(readyCount === objectCount && aligned === false && activeDrawings.length > 0){
-           alignObjects();
-           console.log(activeDrawings.length);
-           aligned = true;
-       }
+    if(readyCount === objectCount && aligned === false && activeDrawings.length > 0){
+        alignObjects();
+        console.log(activeDrawings.length);
+        aligned = true;
+    } else if (!aligned && activeDrawings.length > 0) {
+        updateProgress(33 * (readyCount / objectCount), "Generating Objects: " + readyCount + "/" + objectCount);
+    }
 }
 function startDrawing(objects){
-    activateRun("generateObj");
+    clear();
+    activeDrawings = [];
+    readyCount = 0;
+    aligned = false;
     console.log(objects);
     objectCount = objects.length;
-    activateObj("generateObj");
     objects.map(object => {
-        activeDrawings.push({drawing: new Drawing(x,y,object.name,globalScale),position:object.position, status:false})
+        activeDrawings.push({drawing: new Drawing(x,y,object.name,1),position:object.position, status:false})
     })
     activeDrawings.map(activedrawing =>{
         activedrawing.drawing.generate((boundingbox)=>{
@@ -44,13 +55,11 @@ function startDrawing(objects){
             activedrawing.boundingbox = bb;
             activedrawing.status = true;
             readyCount++;
-            activateObj();
         })
     })
 }
 
 async function alignObjects(){
-    activateRun("placeObj");
     console.log(activeDrawings.length);
     const centerDrawing = activeDrawings[activeDrawings.length - 1].drawing;
     let absMinX = centerDrawing.minX,
@@ -76,11 +85,11 @@ async function alignObjects(){
             objectBB.width/(0.3 * width),
             element.position
         ]
-        
         let position = await placeObject(input);
+        updateProgress(33 + (33 * ((activeDrawings.length - i) / activeDrawings.length)), "Running the GAN: " + (activeDrawings.length - i) + "/" + activeDrawings.length);
         element.drawing.offsetPos(position.x - oldCenter.x, position.y - oldCenter.y);
         //element.drawing.OffsetY(position.y);
-        let boundingBox = await element.drawing.generate();
+        let boundingBox = element.drawing.boundingBox();//await element.drawing.generate();
         element.boundingbox = boundingBox;
         if (absMinX > element.drawing.minX) {
             absMinX = element.drawing.minX;
@@ -94,65 +103,40 @@ async function alignObjects(){
         if (absMaxY < element.drawing.maxY) {
             absMaxY = element.drawing.maxY;
         }
-
     }
-    activateDone("placeObj");
     calculateGlobalOffsets(absMinX, absMinY, absMaxX, absMaxY);
-    stroke("red");
-    rect(absMinX + offsetX, absMinY + offsetY, absMaxX - absMinX, absMaxY - absMinY);
-    console.log({xmin: absMinX, ymin: absMinY, xmax: absMaxX, ymax: absMaxY});
-    stroke(0);
     drawActiveDrawings();
 }
 
 function calculateGlobalOffsets(minX, minY, maxX, maxY) {
-    var fullWidth = maxX - minX;
-    var fullHeight = maxY - minY;
     var center = {
         x: (maxX + minX) / 2,
         y: (maxY + minY) / 2
     };
-    // if (fullWidth > width || fullHeight > height) {
-    //     globalScale = Math.min(width / fullWidth, height / fullHeight);
-    //     center.x *= globalScale;
-    //     center.y *= globalScale;
-    //     fullWidth *= globalScale;
-    //     fullHeight *= globalScale;
-    // }
-
-    // const scaledMaxX = center.x + (fullWidth / 2);
-    // const scaledMinX = center.x - (fullWidth / 2);
-    // const scaledMaxY = center.y + (fullHeight / 2);
-    // const scaledMinY = center.y - (fullHeight / 2);
     
-    // if (scaledMaxX > width) {
-    //     offsetX = width - (center.x + (fullWidth / 2));
-    // } else if (scaledMinX < 0) {
-    //     offsetX = -1 * scaledMinX;
-    // } else {
-    //     offsetX = 0;
-    // }
-
-    // if (scaledMaxY > height) {
-    //     offsetY = height - (center.y + (fullHeight / 2));
-    // } else if (scaledMinY < 0) {
-    //     offsetY = -1 * scaledMinY;
-    // } else {
-    //     offsetY = 0;
-    // }
     console.log(center);
     offsetX = (width / 2) - center.x;
     offsetY = (height / 2) - center.y;
 }
 
 function drawActiveDrawings() {
-    activateRun("drawingObj");
-    activeDrawings.map(element => {
+    let doneCount = 0;
+    let maxLen = 0;
+    for (const element of activeDrawings) {
+        const drawing = element.drawing;
+        if (drawing.strokePath.length > maxLen) {
+            maxLen = drawing.strokePath.length;
+        }
+    }
+    activeDrawings.map((element) => {
         element.drawing.draw(true, offsetX, offsetY, globalScale);
-        //rect(element.drawing.minX, element.drawing.minY, element.drawing.width(), element.drawing.height());
-        const BB = element.drawing.boundingBox();
-        rect(element.drawing.minX + offsetX, element.drawing.minY + offsetY, BB.width * globalScale, BB.height * globalScale);
-    })
+        if (showBoundingBox) {
+            const BB = element.drawing.boundingBox();
+            noFill();
+            rect(element.drawing.minX + offsetX, element.drawing.minY + offsetY, BB.width * globalScale, BB.height * globalScale);
+        }
+    });
+    smoothProgress(maxLen, "Drawing...");
 }
 
 function regenerateActiveDrawings() {
@@ -162,18 +146,24 @@ function regenerateActiveDrawings() {
         activeDrawings[i].generate(() => activeDrawings[ind].draw(true));
     }
 }
-function redrawActiveDrawings() {
+function redrawActiveDrawings(showSteps = true) {
     clear();
-    for (var drawing of activeDrawings) {
-        drawing.setScale(globalScale);
-        drawing.setX(x);
-        drawing.setY(y);
-        drawing.draw();
+    for (var element of activeDrawings) {
+        const drawing = element.drawing;
+        if (showBoundingBox) {
+            noFill();
+            rect(drawing.minX + offsetX, drawing.minY + offsetY, drawing.width() * globalScale, drawing.height() * globalScale);
+        }
+        
+        drawing.draw(showSteps, offsetX, offsetY, globalScale);
     }
+    
 }
 function clearCanvas() {
     clear();
     activeDrawings = [];
+    readyCount = 0;
+    updateProgress(0, "");
     document.getElementById("query").innerHTML = "";
     document.getElementById("error").style.visibility = "hidden";
 }
@@ -184,14 +174,67 @@ function clampScale(drawing) {
     }
 }
 
-function activateRun(element) {
-    $("#"+element).css({"color":"black", "border":"1px solid black"});
+function toggleBoundingBox() {
+    showBoundingBox = $("#boundingBox").is(":checked")
+    if (activeDrawings.length > 0 && aligned) {
+        redrawActiveDrawings(false);
+    }
 }
 
-function activateObj() {
-    $("#generateObj").text("Generating objects "+readyCount+"/"+objectCount);
+function updateProgress(progress, text) {
+    if (progress == 0) {
+        $("#progress").hide();
+    } else {
+        $("#progress").show();
+    }
+    $("#progress").width(progress + "%");
+    if (progress == 100) {
+        $("#progressText").text("Done (100%)");
+    } else {
+        $("#progressText").text(text + " (" + progress + "%)");
+    }
 }
 
-function activateDone(element) {
-    $("#"+element).text("Finished " + $("#"+element).text());
+function windowResized() {
+    const newWidth = windowWidth * 0.5,
+          newHeight = windowHeight * 0.5;
+    console.log({
+        newWidth: newWidth,
+        newHeight: newHeight,
+        width: width,
+        height: height,
+        scale: globalScale
+    });
+
+    globalScale = newWidth / (width / globalScale);
+    //console.log(globalScale);
+    resizeCanvas(newWidth, newHeight, true);
+
+    const newX = width / 2;
+    const newY = height / 2;
+    offsetX += newX - x;
+    offsetY += newY - y;
+    x = newX;
+    y = newY;
+    redrawActiveDrawings(false);
+}
+
+async function smoothProgress(ticks, text, delay = 25, initial = 67) {
+    let count = 0;
+    while (count++ < ticks) {
+        updateProgress(initial + round(33 * count / ticks) , text);
+        await sleep(delay);
+    }
+}
+
+function toggleList() {
+    $("#expandableList").toggleClass("expanded");
+    if ($("#modelBtn").attr("value") == 1) {
+        $("#modelBtn").text("Hide Models"); 
+        $("#modelBtn").attr("value", 0);
+    } else {
+        $("#modelBtn").text("View Available Models");
+        $("#modelBtn").attr("value", 1);
+    }
+
 }

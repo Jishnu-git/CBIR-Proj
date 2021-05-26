@@ -34,3 +34,118 @@ main {
     margin:1%;
     color:gray
 }
+
+#input {
+    height: 5vh;
+    width: 50vw;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    transition: box-shadow 0.5s;
+    box-shadow: none;
+}
+
+#input:focus {
+    box-shadow: 2px 5px 10px 2px gray;
+    outline: none;
+    border: none;
+}
+
+button {
+    width: 10vw;
+    height: 5vh;
+    background-color: #73C2FB;
+    transition: color 0.5s, background-color 0.5s, box-shadow 0.5s;
+    margin: 0px 1.5vw;
+    font-size: 1.25rem;
+
+    outline: none;
+    border: none;
+    box-shadow: none;
+    
+}
+
+button:hover {
+    color: white;
+    box-shadow: 2px 5px 10px 2px gray;
+}
+
+#progressText {
+    width: 37.5vw;
+}
+
+.progress {
+    height: 20px;
+    color: white;
+    background-color: gray;
+}
+
+.progress-bar {
+    background-color: #21B20C;    
+}
+
+.fadeRed:hover {
+    color: white;
+    background-color: #FF4162;
+}
+
+.fadeGreen:hover {
+    color: white;
+    background-color: #21B20C;
+}
+
+.fadeYellow:hover {
+    color: white;
+    background-color: #ff6f00;
+}
+
+#modelList {
+    width: 20vw !important;
+    margin-left: 77.5vw;
+}
+
+#modelBtn {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #73C2FB;
+    font-size: 1.25rem;
+    padding: 1vh 0px;
+    cursor: pointer;
+    box-shadow: none;
+    user-select: none;
+    transition: background-color 0.5s, color 0.5s, box-shadow 0.5s; 
+}
+
+#modelBtn:hover {
+    background-color: #a66fb5;
+    box-shadow: 2px 5px 10px 2px gray;
+    color: white;
+}
+
+#expandableList {
+    height: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    box-shadow: none;
+    transition: height 0.5s, box-shadow 0.5s;
+}
+
+#expandableList::-webkit-scrollbar {
+    display: none;
+}
+
+#expandableList .col-12 {
+    height: 5vh;
+    padding: 0;
+}
+
+.expanded {
+    height: calc(45vh - 25px) !important;
+    transition: height 0.5s !important; 
+    box-shadow: 2px 5px 10px 2px gray !important;
+}
+
+.minimized {
+    height: 0 !important;
+    box-shadow: none !important;
+    transition: height 0.5s !important;
+}

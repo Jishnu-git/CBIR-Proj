@@ -12,7 +12,7 @@ function processQuery(queryText) {
             let firstNN;
             let objects = [];
             for (const taggedWord of taggedWords) {
-                if (taggedWord[1] === "NN") {
+                if (taggedWord[1] === "NN" || models.includes(taggedWord[0])) {
                     if (models.includes(taggedWord[0])) {
                         query += "<span class=\"green\">"
                     } else {
@@ -34,10 +34,14 @@ function processQuery(queryText) {
             } 
             document.getElementById("query").innerHTML = query;
             if (valid) {
+                updateProgress(0, "");
                 formatPositions(objects);
                 startDrawing(objects);
                 document.getElementById("error").style.visibility = "hidden";
             } else {
+                if (document.getElementById("modelBtn").getAttribute("value") == 1) {
+                    toggleList();
+                }
                 document.getElementById("error").style.visibility = "visible";
             }            
         }

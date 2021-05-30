@@ -46,7 +46,7 @@ function processQuery(queryText) {
             }            
         }
     }
-    req.send(JSON.stringify({text: queryText}));
+    req.send(JSON.stringify({text: queryText.toLowerCase()}));
 }
 
 function generalizePosition(pos) {

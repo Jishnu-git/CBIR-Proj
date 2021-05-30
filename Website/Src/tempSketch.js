@@ -166,6 +166,7 @@ function clearCanvas() {
     updateProgress(0, "");
     document.getElementById("query").innerHTML = "";
     document.getElementById("error").style.visibility = "hidden";
+    document.getElementById("input").value = "";
 }
 function clampScale(drawing) {
     drawing.setScale(1);
